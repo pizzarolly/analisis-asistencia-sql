@@ -79,4 +79,4 @@ El análisis permitió identificar múltiples inconsistencias operacionales en l
 ##  Autor
 
 **Tomás Orellana**  
-Analista de Datos en formación  
+Ingeniero Informático en formación  
