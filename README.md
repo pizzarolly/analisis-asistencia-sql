@@ -90,7 +90,7 @@ El análisis permitió identificar múltiples inconsistencias operacionales en l
 ###  Jornadas sin Marcaje
 ![Sin Marcas](sin_marcas.png)
 
-### 📊Estado de las Jornadas
+### Estado de las Jornadas
 ![Estado Jornada](estado_jornada.png)
 
 ---
