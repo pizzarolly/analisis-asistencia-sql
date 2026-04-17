@@ -76,6 +76,25 @@ El análisis permitió identificar múltiples inconsistencias operacionales en l
 
 ---
 
+##  Visualización de Resultados
+
+###  Vista General de los Datos
+![Vista General](overview.png)
+
+###  Detección de Atrasos
+![Atrasos](atrasos.png)
+
+###  Horas Extra
+![Horas Extra](horas_extra.png)
+
+###  Jornadas sin Marcaje
+![Sin Marcas](sin_marcas.png)
+
+### 📊Estado de las Jornadas
+![Estado Jornada](estado_jornada.png)
+
+---
+
 ##  Autor
 
 **Tomás Orellana**  
