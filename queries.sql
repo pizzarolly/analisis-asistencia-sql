@@ -2,43 +2,46 @@
 -- PROYECTO: ANALISIS DE ASISTENCIA LABORAL
 -- =========================================
 
--- 1. Jornadas activas sin marca de entrada
-SELECT
+-- 1. Jornadas activas sin marcas SELECT
     j.id_jornada,
     e.identificacion,
+    CONCAT(
+        e.nombre, ' ',
+        IFNULL(e.segundo_nombre, ''), ' ',
+        e.apellido_paterno, ' ',
+        e.apellido_materno
+    ) AS nombre_completo,
     j.fecha,
     j.hora_inicio_programada,
-    ra.hora_entrada
-FROM jornada j
-LEFT JOIN registro_asistencia ra
-    ON ra.jornada_id = j.id_jornada
-JOIN empleado_detalle ed
-    ON ed.id_detalle = j.empleado_detalle_id
-JOIN empleado e
-    ON e.id_empleado = ed.empleado_id
-WHERE j.activo = 1
-  AND ra.hora_entrada IS NULL;
-
-
--- 2. Jornadas activas sin marca de salida
-SELECT
-    j.id_jornada,
-    e.identificacion,
-    j.fecha,
     j.hora_fin_programada,
-    ra.hora_salida
+    ra.hora_entrada,
+    ra.hora_salida,
+
+    CASE
+        WHEN ra.jornada_id IS NULL THEN 'Sin registro de asistencia'
+        WHEN ra.hora_entrada IS NULL AND ra.hora_salida IS NULL THEN 'Sin entrada y salida'
+        WHEN ra.hora_entrada IS NULL THEN 'Sin entrada'
+        WHEN ra.hora_salida IS NULL THEN 'Sin salida'
+    END AS tipo_inconsistencia
+
 FROM jornada j
-LEFT JOIN registro_asistencia ra
-    ON ra.jornada_id = j.id_jornada
 JOIN empleado_detalle ed
     ON ed.id_detalle = j.empleado_detalle_id
 JOIN empleado e
     ON e.id_empleado = ed.empleado_id
+LEFT JOIN registro_asistencia ra
+    ON ra.jornada_id = j.id_jornada
+
 WHERE j.activo = 1
-  AND ra.hora_salida IS NULL;
+  AND (
+        ra.jornada_id IS NULL
+        OR ra.hora_entrada IS NULL
+        OR ra.hora_salida IS NULL
+      )
 
+ORDER BY tipo_inconsistencia, j.fecha, j.id_jornada;
 
--- 3. Atrasos
+-- 2. Atrasos
 SELECT
     j.id_jornada,
     e.identificacion,
@@ -57,7 +60,7 @@ WHERE j.activo = 1
   AND ra.hora_entrada > j.hora_inicio_programada;
 
 
--- 4. Horas extra
+-- 3. Horas extra
 SELECT
     j.id_jornada,
     e.identificacion,
@@ -76,7 +79,7 @@ WHERE j.activo = 1
   AND ra.hora_salida > j.hora_fin_programada;
 
 
--- 5. Jornadas con contratos no vigentes
+-- 4. Jornadas con contratos no vigentes
 SELECT
     j.id_jornada,
     e.identificacion,
@@ -97,7 +100,7 @@ WHERE j.activo = 1
   );
 
 
--- 6. Inconsistencia de área
+-- 5. Inconsistencia de área
 SELECT
     ed.id_detalle,
     e.identificacion,
@@ -111,7 +114,7 @@ JOIN empleado e
 WHERE ed.area_id <> cl.area_id;
 
 
--- 7. Estado general de jornada
+-- 6. Estado general de jornada
 SELECT
     j.id_jornada,
     e.identificacion,
@@ -137,7 +140,7 @@ JOIN empleado e
     ON e.id_empleado = ed.empleado_id;
 
 
--- 8. Métricas globales
+-- 7. Métricas globales
 SELECT
     COUNT(*) AS total_jornadas,
     SUM(CASE WHEN j.activo = 1 THEN 1 ELSE 0 END) AS activas,
